@@ -1,0 +1,59 @@
+---
+title: "Example Exam Analysis"
+author: "Alan Wong"
+date: "5/8/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages, include=FALSE}
+library('tidyverse')
+```
+
+## Data
+
+Generate some intro-class midterm score looking data. 
+
+```{r }
+# Class size 300, most people will get A's for this class
+scores <- rbeta(300, 18, 2) * 100
+sectionNames <- paste0('Section',rep(seq(1,6),50)) # 6 Sections
+classData <- data.frame(round(scores,digits=1),factor(sectionNames))
+names(classData) <- c("Score", "Section")
+```
+
+## Section Comparison
+
+An ANOVA reveals no significant differences between the six sections, as expected. 
+
+```{r}
+fit <- aov(Score ~ Section, data=classData)
+summary(fit)
+```
+
+
+```{r, fig.height=3, fig.width=6, fig.align="center"}
+library(ggplot2)
+p <- ggplot(classData, aes(x=Section, y=Score)) + 
+  geom_boxplot(outlier.color="red") + 
+  labs(title="MyClass Midterm Scores by Sections")
+p # Display the plot
+```
+
+## Histogram
+
+And now, a histogram summarizing the whole class's performance.
+
+```{r histogram}
+
+p2 <- ggplot(classData, aes(Score)) + 
+  geom_histogram(breaks=seq(10, 100, by=5)) +
+  labs(title="MyClass Midterm Scores")
+p2 # Display the plot
+```
+
